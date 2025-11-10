@@ -126,6 +126,8 @@ export class Enemy {
      * Check if enemy is off screen
      */
     isOffScreen(canvas) {
-        return this.y > canvas.height || this.y + this.height < -50;
+        // Only remove if off bottom of screen
+        // Keep enemies that are above screen (they will scroll down)
+        return this.y > canvas.height + 100;
     }
 }
