@@ -12,7 +12,13 @@ export const CONFIG = {
         JUMP_POWER: -12,
         MOVE_SPEED: 5,
         MAX_HEIGHT: 100, // Prevents player from going too high
-        COLOR: '#ff6b6b'
+        COLOR: '#ff6b6b',
+        JETPACK: {
+            CHARGE_TIME: 5000, // 5 seconds to charge
+            FLIGHT_TIME: 5000, // 5 seconds of flight
+            THRUST_POWER: -15, // Upward force
+            FUEL_REGEN_RATE: 1 // % per frame when not in use (5 seconds = ~300 frames at 60fps)
+        }
     },
 
     // Platform settings

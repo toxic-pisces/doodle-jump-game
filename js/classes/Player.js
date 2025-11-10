@@ -19,6 +19,11 @@ export class Player {
         this.skin = SKINS[skinId] || SKINS[DEFAULT_SKIN];
         this.invincible = false;
         this.invincibleUntil = 0;
+
+        // Jetpack state
+        this.jetpackFuel = 100; // Percentage (0-100)
+        this.jetpackActive = false;
+        this.jetpackCharging = false;
     }
 
     /**
@@ -75,7 +80,58 @@ export class Player {
         ctx.arc(this.x + this.width / 2, this.y + 25, 8, 0, Math.PI);
         ctx.stroke();
 
+        // Draw jetpack flames if active
+        if (this.jetpackActive) {
+            this.drawJetpackFlames(ctx);
+        }
+
         ctx.restore();
+    }
+
+    /**
+     * Draw jetpack flame effects
+     */
+    drawJetpackFlames(ctx) {
+        const centerX = this.x + this.width / 2;
+        const bottomY = this.y + this.height;
+
+        // Animated flame effect
+        const flameIntensity = 0.5 + Math.sin(Date.now() / 50) * 0.5;
+
+        // Left flame
+        const leftX = centerX - 10;
+        this.drawFlame(ctx, leftX, bottomY, flameIntensity);
+
+        // Right flame
+        const rightX = centerX + 10;
+        this.drawFlame(ctx, rightX, bottomY, flameIntensity);
+    }
+
+    /**
+     * Draw a single flame
+     */
+    drawFlame(ctx, x, y, intensity) {
+        const flameHeight = 15 + intensity * 10;
+
+        // Outer flame (yellow)
+        ctx.fillStyle = `rgba(255, 165, 0, ${0.8 * intensity})`;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - 5, y + flameHeight * 0.6);
+        ctx.lineTo(x, y + flameHeight);
+        ctx.lineTo(x + 5, y + flameHeight * 0.6);
+        ctx.closePath();
+        ctx.fill();
+
+        // Inner flame (bright yellow/white)
+        ctx.fillStyle = `rgba(255, 255, 100, ${0.9 * intensity})`;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - 3, y + flameHeight * 0.4);
+        ctx.lineTo(x, y + flameHeight * 0.7);
+        ctx.lineTo(x + 3, y + flameHeight * 0.4);
+        ctx.closePath();
+        ctx.fill();
     }
 
     /**
@@ -91,8 +147,14 @@ export class Player {
      * Update player position and physics
      */
     update(keys, platforms, inputManager) {
-        // Apply gravity
-        this.velocityY += this.gravity;
+        // Update jetpack state and apply thrust if active
+        this.updateJetpack();
+
+        // Apply gravity (unless jetpack is active)
+        if (!this.jetpackActive) {
+            this.velocityY += this.gravity;
+        }
+
         this.y += this.velocityY;
 
         // Keep player from going too high
@@ -182,5 +244,68 @@ export class Player {
     isInvincible() {
         this.updateInvincibility();
         return this.invincible;
+    }
+
+    /**
+     * Activate jetpack
+     */
+    activateJetpack() {
+        if (this.jetpackFuel >= 100 && !this.jetpackActive) {
+            this.jetpackActive = true;
+            this.jetpackCharging = false;
+        }
+    }
+
+    /**
+     * Deactivate jetpack
+     */
+    deactivateJetpack() {
+        if (this.jetpackActive) {
+            this.jetpackActive = false;
+            this.jetpackCharging = true;
+        }
+    }
+
+    /**
+     * Update jetpack fuel and state
+     */
+    updateJetpack() {
+        if (this.jetpackActive) {
+            // Drain fuel while active
+            const drainRate = 100 / (CONFIG.PLAYER.JETPACK.FLIGHT_TIME / 1000 * 60); // Per frame at 60fps
+            this.jetpackFuel -= drainRate;
+
+            // Apply upward thrust
+            this.velocityY = CONFIG.PLAYER.JETPACK.THRUST_POWER;
+
+            // Deactivate when fuel runs out
+            if (this.jetpackFuel <= 0) {
+                this.jetpackFuel = 0;
+                this.deactivateJetpack();
+            }
+        } else if (this.jetpackCharging || this.jetpackFuel < 100) {
+            // Recharge fuel
+            const rechargeRate = 100 / (CONFIG.PLAYER.JETPACK.CHARGE_TIME / 1000 * 60); // Per frame at 60fps
+            this.jetpackFuel += rechargeRate;
+
+            if (this.jetpackFuel >= 100) {
+                this.jetpackFuel = 100;
+                this.jetpackCharging = false;
+            }
+        }
+    }
+
+    /**
+     * Get jetpack fuel percentage
+     */
+    getJetpackFuel() {
+        return Math.max(0, Math.min(100, this.jetpackFuel));
+    }
+
+    /**
+     * Check if jetpack is ready
+     */
+    isJetpackReady() {
+        return this.jetpackFuel >= 100 && !this.jetpackActive;
     }
 }

@@ -22,6 +22,7 @@ export class Game {
         // DOM elements
         this.scoreDisplay = document.getElementById('score');
         this.livesDisplay = document.getElementById('lives');
+        this.jetpackDisplay = document.getElementById('jetpackFill');
         this.gameOverScreen = document.getElementById('gameOver');
         this.finalScoreDisplay = document.getElementById('finalScore');
         this.restartBtn = document.getElementById('restartBtn');
@@ -187,6 +188,14 @@ export class Game {
     update() {
         // Update player with input manager for touch support
         const keys = this.inputManager.getKeys();
+
+        // Handle jetpack activation (Space key or W key)
+        if (keys[' '] || keys['w'] || keys['W']) {
+            this.player.activateJetpack();
+        } else {
+            this.player.deactivateJetpack();
+        }
+
         this.player.update(keys, this.platforms, this.inputManager);
 
         // Check if player is still alive
@@ -357,6 +366,7 @@ export class Game {
 
         this.update();
         this.render();
+        this.updateJetpackDisplay();
 
         requestAnimationFrame(() => this.gameLoop());
     }
@@ -373,6 +383,25 @@ export class Game {
      */
     updateLives() {
         this.livesDisplay.textContent = `Lives: ${this.lives}`;
+    }
+
+    /**
+     * Update jetpack fuel display
+     */
+    updateJetpackDisplay() {
+        if (this.player) {
+            const fuel = this.player.getJetpackFuel();
+            this.jetpackDisplay.style.width = `${fuel}%`;
+
+            // Change color based on state
+            if (this.player.jetpackActive) {
+                this.jetpackDisplay.style.background = 'linear-gradient(to right, #ff0000, #ff6b00)';
+            } else if (fuel >= 100) {
+                this.jetpackDisplay.style.background = 'linear-gradient(to right, #00ff00, #00cc00)';
+            } else {
+                this.jetpackDisplay.style.background = 'linear-gradient(to right, #ff6b00, #ffa500)';
+            }
+        }
     }
 
     /**
