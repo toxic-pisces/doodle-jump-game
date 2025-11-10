@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doodle Jump Game</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="skinMenu">
+        <h3>Skin auswählen</h3>
+        <div id="skinSelector">
+            <div class="skin-option" data-skin="red">
+                <div class="skin-preview" style="background-color: #ff6b6b;"></div>
+                <span>Rot</span>
+            </div>
+            <div class="skin-option" data-skin="black">
+                <div class="skin-preview" style="background-color: #2c3e50;"></div>
+                <span>Schwarz</span>
+            </div>
+            <div class="skin-option" data-skin="yellow">
+                <div class="skin-preview" style="background-color: #f1c40f;"></div>
+                <span>Gelb</span>
+            </div>
+            <div class="skin-option" data-skin="blue">
+                <div class="skin-preview" style="background-color: #3498db;"></div>
+                <span>Blau</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="score">Score: 0</div>
+        <div id="gameOver">
+            <h2>Game Over!</h2>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <button id="restartBtn">Restart</button>
+        </div>
+    </div>
+    <div id="instructions">
+        <strong>Controls:</strong> Arrow Keys (← →) or A/D to move | Touch left/right side on mobile | Space to start
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
