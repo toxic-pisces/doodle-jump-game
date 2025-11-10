@@ -41,7 +41,7 @@ export const CONFIG = {
     ENEMY: {
         WIDTH: 35,
         HEIGHT: 35,
-        SPAWN_CHANCE: 0.15, // 15% chance to spawn
+        SPAWN_CHANCE: 0.30, // 30% chance to spawn
         MOVE_SPEED: 1.5,
         SHOOT_INTERVAL: 2000, // Shoot every 2 seconds
         COLOR: '#e74c3c'
