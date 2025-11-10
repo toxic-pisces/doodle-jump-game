@@ -35,5 +35,23 @@ export const CONFIG = {
     COLLECTIBLE: {
         SPAWN_CHANCE: 0.25, // 25% chance to spawn on a platform
         BOOST_POWER: -20 // Strong upward velocity
+    },
+
+    // Enemies
+    ENEMY: {
+        WIDTH: 35,
+        HEIGHT: 35,
+        SPAWN_CHANCE: 0.15, // 15% chance to spawn
+        MOVE_SPEED: 1.5,
+        SHOOT_INTERVAL: 2000, // Shoot every 2 seconds
+        COLOR: '#e74c3c'
+    },
+
+    // Projectiles
+    PROJECTILE: {
+        WIDTH: 8,
+        HEIGHT: 8,
+        SPEED: 4,
+        COLOR: '#c0392b'
     }
 };

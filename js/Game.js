@@ -2,6 +2,8 @@ import { CONFIG } from './config.js';
 import { Player } from './classes/Player.js';
 import { Platform } from './classes/Platform.js';
 import { Collectible } from './classes/Collectible.js';
+import { Enemy } from './classes/Enemy.js';
+import { Projectile } from './classes/Projectile.js';
 import { InputManager } from './utils/input.js';
 import { DEFAULT_SKIN } from './skins.js';
 
@@ -27,6 +29,8 @@ export class Game {
         this.player = null;
         this.platforms = [];
         this.collectibles = [];
+        this.enemies = [];
+        this.projectiles = [];
         this.score = 0;
         this.highScore = 0;
         this.isRunning = false;
@@ -114,6 +118,8 @@ export class Game {
         this.player = new Player(this.canvas, this.currentSkin);
         this.platforms = [];
         this.collectibles = [];
+        this.enemies = [];
+        this.projectiles = [];
         this.score = 0;
         this.isRunning = true;
         this.gameOverScreen.style.display = 'none';
@@ -156,6 +162,13 @@ export class Game {
             const collectibleY = y - 25; // Slightly above platform
             this.collectibles.push(new Collectible(collectibleX, collectibleY, 'boost'));
         }
+
+        // Randomly spawn an enemy near the platform
+        if (Math.random() < CONFIG.ENEMY.SPAWN_CHANCE) {
+            const enemyX = Math.random() * (this.canvas.width - CONFIG.ENEMY.WIDTH);
+            const enemyY = y - 80; // Above the platform
+            this.enemies.push(new Enemy(enemyX, enemyY));
+        }
     }
 
     /**
@@ -191,6 +204,44 @@ export class Game {
             }
         });
 
+        // Update enemies
+        this.enemies.forEach((enemy, index) => {
+            enemy.update(this.player, this.canvas);
+
+            // Check if enemy should shoot
+            if (enemy.shouldShoot()) {
+                const projectile = enemy.shoot(this.player);
+                this.projectiles.push(projectile);
+            }
+
+            // Check collision with player
+            if (enemy.checkCollision(this.player)) {
+                this.endGame();
+                return;
+            }
+
+            // Remove enemies that are off screen
+            if (enemy.isOffScreen(this.canvas)) {
+                this.enemies.splice(index, 1);
+            }
+        });
+
+        // Update projectiles
+        this.projectiles.forEach((projectile, index) => {
+            projectile.update(this.player, this.canvas);
+
+            // Check collision with player
+            if (projectile.checkCollision(this.player)) {
+                this.endGame();
+                return;
+            }
+
+            // Remove projectiles that are off screen
+            if (projectile.isOffScreen(this.canvas)) {
+                this.projectiles.splice(index, 1);
+            }
+        });
+
         // Update platforms
         this.platforms.forEach((platform, index) => {
             platform.update(this.player, this.canvas);
@@ -223,6 +274,16 @@ export class Game {
         // Draw collectibles
         this.collectibles.forEach(collectible => {
             collectible.draw(this.ctx);
+        });
+
+        // Draw enemies
+        this.enemies.forEach(enemy => {
+            enemy.draw(this.ctx);
+        });
+
+        // Draw projectiles
+        this.projectiles.forEach(projectile => {
+            projectile.draw(this.ctx);
         });
 
         // Draw player
