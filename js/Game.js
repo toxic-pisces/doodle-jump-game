@@ -62,6 +62,14 @@ export class Game {
             }
         });
 
+        // Touch start on canvas to start game (mobile)
+        this.canvas.addEventListener('touchstart', (e) => {
+            if (!this.isRunning) {
+                e.preventDefault();
+                this.start();
+            }
+        }, { passive: false });
+
         // Restart button
         this.restartBtn.addEventListener('click', () => {
             this.start();

@@ -7,12 +7,13 @@
 body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     min-height: 100vh;
     background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
     font-family: 'Arial', sans-serif;
-    overflow: hidden;
+    overflow: auto;
+    padding: 20px 10px;
 }
 
 #gameContainer {
@@ -20,15 +21,18 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     border-radius: 10px;
     overflow: hidden;
+    max-width: 100%;
 }
 
 canvas {
     display: block;
     background: linear-gradient(to bottom, #87CEEB, #B0E0E6);
-    touch-action: none; /* Prevent default touch behaviors like scrolling */
+    touch-action: manipulation; /* Allow basic touch but prevent double-tap zoom */
     user-select: none; /* Prevent text selection on touch */
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
+    max-width: 100%;
+    height: auto;
 }
 
 #score {
@@ -135,7 +139,9 @@ canvas {
     transition: all 0.3s ease;
 }
 
+/* Hidden by default */
 #skinMenu.collapsed {
+    display: none !important;
     opacity: 0;
     pointer-events: none;
     transform: translateY(-10px);
@@ -197,8 +203,21 @@ canvas {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
+    body {
+        padding: 10px 5px;
+        justify-content: flex-start;
+    }
+
     #gameContainer {
-        margin: 10px;
+        margin: 0;
+        width: 100%;
+        max-width: 100vw;
+    }
+
+    canvas {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 70vh;
     }
 
     #skinSelector {
@@ -223,5 +242,11 @@ canvas {
     .menu-toggle {
         width: 45px;
         height: 45px;
+    }
+
+    #skinMenu {
+        right: 5px;
+        top: 60px;
+        max-width: calc(100vw - 20px);
     }
 }
