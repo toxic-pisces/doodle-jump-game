@@ -55,6 +55,13 @@ export class Game {
             }
         });
 
+        // Touch/Click on canvas to start game
+        this.canvas.addEventListener('click', () => {
+            if (!this.isRunning) {
+                this.start();
+            }
+        });
+
         // Restart button
         this.restartBtn.addEventListener('click', () => {
             this.start();
@@ -293,9 +300,17 @@ export class Game {
         this.ctx.font = '24px Arial';
         this.ctx.textAlign = 'center';
         this.ctx.fillText(
-            'Press SPACE to Start',
+            'Tap to Start',
             this.canvas.width / 2,
             this.canvas.height / 2
+        );
+
+        // Additional hint
+        this.ctx.font = '16px Arial';
+        this.ctx.fillText(
+            '(or press SPACE)',
+            this.canvas.width / 2,
+            this.canvas.height / 2 + 30
         );
     }
 }

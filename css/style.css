@@ -85,17 +85,60 @@ canvas {
 #instructions {
     margin-top: 20px;
     color: #333;
-    font-size: 16px;
+    font-size: 14px;
     text-align: center;
+    padding: 0 10px;
+}
+
+/* Menu Toggle Button */
+.menu-toggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: white;
+    border: 2px solid #4CAF50;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    color: #4CAF50;
+}
+
+.menu-toggle:hover {
+    background: #4CAF50;
+    color: white;
+    transform: scale(1.1);
+}
+
+.menu-toggle:active {
+    transform: scale(0.95);
 }
 
 /* Skin Menu Styles */
 #skinMenu {
+    position: fixed;
+    top: 70px;
+    right: 10px;
     background: white;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    max-height: 80vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+}
+
+#skinMenu.collapsed {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
 }
 
 #skinMenu h3 {
@@ -150,4 +193,35 @@ canvas {
     font-size: 14px;
     font-weight: bold;
     color: #555;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    #gameContainer {
+        margin: 10px;
+    }
+
+    #skinSelector {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .skin-option {
+        padding: 8px;
+    }
+
+    .skin-preview {
+        width: 40px;
+        height: 40px;
+    }
+
+    #instructions {
+        font-size: 12px;
+        margin-top: 10px;
+    }
+
+    .menu-toggle {
+        width: 45px;
+        height: 45px;
+    }
 }
