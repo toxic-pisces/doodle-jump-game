@@ -80,8 +80,8 @@ export class Enemy {
             this.velocityX = -this.velocityX;
         }
 
-        // Move with player when player goes up
-        if (player.y < canvas.height / 2 && player.velocityY < 0) {
+        // Move with player when player goes up (keep player in lower 40%)
+        if (player.y < canvas.height * 0.6 && player.velocityY < 0) {
             this.y -= player.velocityY;
         }
     }

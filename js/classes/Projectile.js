@@ -10,14 +10,14 @@ export class Projectile {
         this.x = x;
         this.y = y;
 
-        // Calculate direction towards target
+        // Calculate horizontal direction towards target, but always shoot downwards
         const dx = targetX - x;
-        const dy = targetY - y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+        const horizontalDistance = Math.abs(dx);
 
-        // Normalize and apply speed
-        this.velocityX = (dx / distance) * CONFIG.PROJECTILE.SPEED;
-        this.velocityY = (dy / distance) * CONFIG.PROJECTILE.SPEED;
+        // Normalize horizontal direction and apply speed
+        this.velocityX = horizontalDistance > 0 ? (dx / horizontalDistance) * CONFIG.PROJECTILE.SPEED * 0.5 : 0;
+        // Always shoot downwards
+        this.velocityY = CONFIG.PROJECTILE.SPEED;
     }
 
     /**
@@ -60,8 +60,8 @@ export class Projectile {
         this.x += this.velocityX;
         this.y += this.velocityY;
 
-        // Move with player when player goes up
-        if (player.y < canvas.height / 2 && player.velocityY < 0) {
+        // Move with player when player goes up (keep player in lower 40%)
+        if (player.y < canvas.height * 0.6 && player.velocityY < 0) {
             this.y -= player.velocityY;
         }
     }

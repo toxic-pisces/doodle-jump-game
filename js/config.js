@@ -2,7 +2,7 @@
 export const CONFIG = {
     // Canvas dimensions
     CANVAS_WIDTH: 400,
-    CANVAS_HEIGHT: 600,
+    CANVAS_HEIGHT: 700,
 
     // Player settings
     PLAYER: {

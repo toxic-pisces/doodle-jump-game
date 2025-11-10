@@ -27,8 +27,8 @@ export class Platform {
      * Update platform position based on player movement
      */
     update(player, canvas) {
-        // Move platforms down when player goes up
-        if (player.y < canvas.height / 2 && player.velocityY < 0) {
+        // Move platforms down when player goes up (keep player in lower 40%)
+        if (player.y < canvas.height * 0.6 && player.velocityY < 0) {
             this.y -= player.velocityY;
         }
     }

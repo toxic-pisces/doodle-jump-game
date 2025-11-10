@@ -94,8 +94,8 @@ export class Collectible {
      * Update collectible position based on player movement
      */
     update(player, canvas) {
-        // Move collectible down when player goes up
-        if (player.y < canvas.height / 2 && player.velocityY < 0) {
+        // Move collectible down when player goes up (keep player in lower 40%)
+        if (player.y < canvas.height * 0.6 && player.velocityY < 0) {
             this.y -= player.velocityY;
         }
     }
