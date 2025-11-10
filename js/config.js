@@ -31,6 +31,11 @@ export const CONFIG = {
         POINTS_PER_PLATFORM: 10
     },
 
+    // Lives
+    LIVES: {
+        INITIAL_LIVES: 3
+    },
+
     // Collectibles
     COLLECTIBLE: {
         SPAWN_CHANCE: 0.25, // 25% chance to spawn on a platform

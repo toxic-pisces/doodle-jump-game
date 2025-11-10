@@ -21,6 +21,7 @@ export class Game {
 
         // DOM elements
         this.scoreDisplay = document.getElementById('score');
+        this.livesDisplay = document.getElementById('lives');
         this.gameOverScreen = document.getElementById('gameOver');
         this.finalScoreDisplay = document.getElementById('finalScore');
         this.restartBtn = document.getElementById('restartBtn');
@@ -32,6 +33,7 @@ export class Game {
         this.enemies = [];
         this.projectiles = [];
         this.score = 0;
+        this.lives = CONFIG.LIVES.INITIAL_LIVES;
         this.highScore = 0;
         this.isRunning = false;
         this.currentSkin = DEFAULT_SKIN;
@@ -121,9 +123,11 @@ export class Game {
         this.enemies = [];
         this.projectiles = [];
         this.score = 0;
+        this.lives = CONFIG.LIVES.INITIAL_LIVES;
         this.isRunning = true;
         this.gameOverScreen.style.display = 'none';
         this.updateScore();
+        this.updateLives();
 
         // Create initial platforms
         this.platforms.push(new Platform(
@@ -216,7 +220,8 @@ export class Game {
 
             // Check collision with player
             if (enemy.checkCollision(this.player)) {
-                this.endGame();
+                this.loseLife();
+                this.enemies.splice(index, 1); // Remove enemy after collision
                 return;
             }
 
@@ -232,7 +237,8 @@ export class Game {
 
             // Check collision with player
             if (projectile.checkCollision(this.player)) {
-                this.endGame();
+                this.loseLife();
+                this.projectiles.splice(index, 1); // Remove projectile after collision
                 return;
             }
 
@@ -346,6 +352,25 @@ export class Game {
      */
     updateScore() {
         this.scoreDisplay.textContent = `Score: ${this.score}`;
+    }
+
+    /**
+     * Update lives display
+     */
+    updateLives() {
+        this.livesDisplay.textContent = `Lives: ${this.lives}`;
+    }
+
+    /**
+     * Lose a life and check for game over
+     */
+    loseLife() {
+        this.lives--;
+        this.updateLives();
+
+        if (this.lives <= 0) {
+            this.endGame();
+        }
     }
 
     /**

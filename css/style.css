@@ -46,6 +46,17 @@ canvas {
     z-index: 10;
 }
 
+#lives {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
 #gameOver {
     position: absolute;
     top: 50%;
