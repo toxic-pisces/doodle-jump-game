@@ -17,12 +17,44 @@ export class Player {
         this.jumpPower = CONFIG.PLAYER.JUMP_POWER;
         this.moveSpeed = CONFIG.PLAYER.MOVE_SPEED;
         this.skin = SKINS[skinId] || SKINS[DEFAULT_SKIN];
+        this.invincible = false;
+        this.invincibleUntil = 0;
     }
 
     /**
      * Draw the player character
      */
     draw(ctx) {
+        ctx.save();
+
+        // Draw shield glow if invincible
+        if (this.invincible) {
+            const gradient = ctx.createRadialGradient(
+                this.x + this.width / 2,
+                this.y + this.height / 2,
+                0,
+                this.x + this.width / 2,
+                this.y + this.height / 2,
+                this.width * 1.5
+            );
+            gradient.addColorStop(0, 'rgba(52, 152, 219, 0.4)');
+            gradient.addColorStop(1, 'rgba(52, 152, 219, 0)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(
+                this.x - this.width / 2,
+                this.y - this.height / 2,
+                this.width * 2,
+                this.height * 2
+            );
+
+            // Pulsing shield border
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 3;
+            ctx.globalAlpha = 0.5 + Math.sin(Date.now() / 200) * 0.3;
+            ctx.strokeRect(this.x - 3, this.y - 3, this.width + 6, this.height + 6);
+            ctx.globalAlpha = 1;
+        }
+
         // Draw player body with current skin color
         ctx.fillStyle = this.skin.bodyColor;
         ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -42,6 +74,8 @@ export class Player {
         ctx.beginPath();
         ctx.arc(this.x + this.width / 2, this.y + 25, 8, 0, Math.PI);
         ctx.stroke();
+
+        ctx.restore();
     }
 
     /**
@@ -123,5 +157,30 @@ export class Player {
      */
     isAlive() {
         return this.y <= this.canvas.height;
+    }
+
+    /**
+     * Activate invincibility shield
+     */
+    activateShield(duration) {
+        this.invincible = true;
+        this.invincibleUntil = Date.now() + duration;
+    }
+
+    /**
+     * Check and update invincibility status
+     */
+    updateInvincibility() {
+        if (this.invincible && Date.now() >= this.invincibleUntil) {
+            this.invincible = false;
+        }
+    }
+
+    /**
+     * Check if player is currently invincible
+     */
+    isInvincible() {
+        this.updateInvincibility();
+        return this.invincible;
     }
 }

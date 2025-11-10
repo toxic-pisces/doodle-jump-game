@@ -160,11 +160,17 @@ export class Game {
 
         this.platforms.push(new Platform(x, y));
 
-        // Randomly spawn a collectible on the platform
-        if (Math.random() < CONFIG.COLLECTIBLE.SPAWN_CHANCE) {
-            const collectibleX = x + CONFIG.PLATFORM.WIDTH / 2 - 10; // Center on platform
-            const collectibleY = y - 25; // Slightly above platform
-            this.collectibles.push(new Collectible(collectibleX, collectibleY, 'boost'));
+        // Randomly spawn collectibles on the platform
+        const collectibleX = x + CONFIG.PLATFORM.WIDTH / 2 - 12.5; // Center on platform
+        const collectibleY = y - 30; // Slightly above platform
+
+        // Spawn shield collectible
+        if (Math.random() < CONFIG.COLLECTIBLE.SHIELD.SPAWN_CHANCE) {
+            this.collectibles.push(new Collectible(collectibleX, collectibleY, 'shield'));
+        }
+        // Spawn extra life collectible (only if no shield spawned)
+        else if (Math.random() < CONFIG.COLLECTIBLE.EXTRA_LIFE.SPAWN_CHANCE) {
+            this.collectibles.push(new Collectible(collectibleX, collectibleY, 'extra_life'));
         }
 
         // Randomly spawn an enemy near the platform
@@ -196,8 +202,16 @@ export class Game {
             // Check collision with player
             if (collectible.checkCollision(this.player)) {
                 collectible.collect();
-                // Apply boost to player
-                this.player.velocityY = collectible.getBoostPower();
+
+                // Apply effect based on collectible type
+                const type = collectible.getType();
+                if (type === 'shield') {
+                    this.player.activateShield(CONFIG.COLLECTIBLE.SHIELD.DURATION);
+                } else if (type === 'extra_life') {
+                    this.lives++;
+                    this.updateLives();
+                }
+
                 // Remove collectible
                 this.collectibles.splice(index, 1);
             }
@@ -218,8 +232,8 @@ export class Game {
                 this.projectiles.push(projectile);
             }
 
-            // Check collision with player
-            if (enemy.checkCollision(this.player)) {
+            // Check collision with player (only if not invincible)
+            if (enemy.checkCollision(this.player) && !this.player.isInvincible()) {
                 this.loseLife();
                 this.enemies.splice(index, 1); // Remove enemy after collision
                 return;
@@ -235,8 +249,8 @@ export class Game {
         this.projectiles.forEach((projectile, index) => {
             projectile.update(this.player, this.canvas);
 
-            // Check collision with player
-            if (projectile.checkCollision(this.player)) {
+            // Check collision with player (only if not invincible)
+            if (projectile.checkCollision(this.player) && !this.player.isInvincible()) {
                 this.loseLife();
                 this.projectiles.splice(index, 1); // Remove projectile after collision
                 return;

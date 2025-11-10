@@ -38,8 +38,15 @@ export const CONFIG = {
 
     // Collectibles
     COLLECTIBLE: {
-        SPAWN_CHANCE: 0.25, // 25% chance to spawn on a platform
-        BOOST_POWER: -20 // Strong upward velocity
+        SHIELD: {
+            SPAWN_CHANCE: 0.15, // 15% chance
+            DURATION: 5000, // 5 seconds invincibility
+            COLOR: '#3498db' // Blue
+        },
+        EXTRA_LIFE: {
+            SPAWN_CHANCE: 0.10, // 10% chance
+            COLOR: '#e74c3c' // Red heart
+        }
     },
 
     // Enemies

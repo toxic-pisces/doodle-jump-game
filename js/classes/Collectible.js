@@ -1,13 +1,15 @@
+import { CONFIG } from '../config.js';
+
 /**
- * Collectible class - Handles boost items on platforms
+ * Collectible class - Handles collectible items (shield, extra life)
  */
 export class Collectible {
-    constructor(x, y, type = 'boost') {
+    constructor(x, y, type = 'shield') {
         this.x = x;
         this.y = y;
-        this.width = 20;
-        this.height = 20;
-        this.type = type;
+        this.width = 25;
+        this.height = 25;
+        this.type = type; // 'shield' or 'extra_life'
         this.collected = false;
         this.animationOffset = 0;
         this.animationSpeed = 0.1;
@@ -22,71 +24,128 @@ export class Collectible {
         // Update animation
         this.animationOffset += this.animationSpeed;
 
+        // Floating animation
+        const floatY = this.y + Math.sin(this.animationOffset) * 3;
+
         // Save context
         ctx.save();
 
         // Draw glow effect
+        const glowColor = this.type === 'shield'
+            ? 'rgba(52, 152, 219, 0.5)'
+            : 'rgba(231, 76, 60, 0.5)';
+
         const gradient = ctx.createRadialGradient(
             this.x + this.width / 2,
-            this.y + this.height / 2,
+            floatY + this.height / 2,
             0,
             this.x + this.width / 2,
-            this.y + this.height / 2,
+            floatY + this.height / 2,
             this.width
         );
-        gradient.addColorStop(0, 'rgba(255, 215, 0, 0.8)');
-        gradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+        gradient.addColorStop(0, glowColor);
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
         ctx.fillStyle = gradient;
         ctx.fillRect(
             this.x - this.width / 2,
-            this.y - this.height / 2,
+            floatY - this.height / 2,
             this.width * 2,
             this.height * 2
         );
 
-        // Floating animation
-        const floatY = this.y + Math.sin(this.animationOffset) * 3;
-
-        // Draw star/boost icon
-        this.drawStar(ctx, this.x + this.width / 2, floatY + this.height / 2, this.width / 2);
+        // Draw icon based on type
+        if (this.type === 'shield') {
+            this.drawShield(ctx, this.x + this.width / 2, floatY + this.height / 2);
+        } else if (this.type === 'extra_life') {
+            this.drawHeart(ctx, this.x + this.width / 2, floatY + this.height / 2);
+        }
 
         ctx.restore();
     }
 
     /**
-     * Draw a star shape
+     * Draw a shield icon
      */
-    drawStar(ctx, cx, cy, radius) {
-        const spikes = 5;
-        const outerRadius = radius;
-        const innerRadius = radius / 2;
+    drawShield(ctx, cx, cy) {
+        const size = this.width / 2;
+
+        // Shield outline
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - size);
+        ctx.quadraticCurveTo(cx + size, cy - size / 2, cx + size, cy);
+        ctx.quadraticCurveTo(cx + size, cy + size, cx, cy + size * 1.3);
+        ctx.quadraticCurveTo(cx - size, cy + size, cx - size, cy);
+        ctx.quadraticCurveTo(cx - size, cy - size / 2, cx, cy - size);
+        ctx.closePath();
+
+        // Fill shield
+        ctx.fillStyle = CONFIG.COLLECTIBLE.SHIELD.COLOR;
+        ctx.fill();
+
+        // Shield border
+        ctx.strokeStyle = '#2980b9';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Add cross detail
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - size / 2);
+        ctx.lineTo(cx, cy + size / 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx - size / 2, cy);
+        ctx.lineTo(cx + size / 2, cy);
+        ctx.stroke();
+    }
+
+    /**
+     * Draw a heart icon
+     */
+    drawHeart(ctx, cx, cy) {
+        const size = this.width / 2.5;
 
         ctx.beginPath();
-        ctx.fillStyle = '#FFD700'; // Gold color
-        ctx.strokeStyle = '#FFA500'; // Orange outline
-        ctx.lineWidth = 2;
+        ctx.fillStyle = CONFIG.COLLECTIBLE.EXTRA_LIFE.COLOR;
 
-        for (let i = 0; i < spikes * 2; i++) {
-            const angle = (i * Math.PI) / spikes - Math.PI / 2;
-            const r = i % 2 === 0 ? outerRadius : innerRadius;
-            const x = cx + Math.cos(angle) * r;
-            const y = cy + Math.sin(angle) * r;
+        // Left half of heart
+        ctx.moveTo(cx, cy + size / 2);
+        ctx.bezierCurveTo(
+            cx, cy + size / 4,
+            cx - size, cy - size / 4,
+            cx - size / 2, cy - size / 2
+        );
+        ctx.bezierCurveTo(
+            cx - size, cy - size,
+            cx - size * 0.3, cy - size,
+            cx, cy
+        );
 
-            if (i === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        }
+        // Right half of heart
+        ctx.bezierCurveTo(
+            cx + size * 0.3, cy - size,
+            cx + size, cy - size,
+            cx + size / 2, cy - size / 2
+        );
+        ctx.bezierCurveTo(
+            cx + size, cy - size / 4,
+            cx, cy + size / 4,
+            cx, cy + size / 2
+        );
 
         ctx.closePath();
         ctx.fill();
+
+        // Heart outline
+        ctx.strokeStyle = '#c0392b';
+        ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Add center circle for extra detail
+        // Highlight
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
         ctx.beginPath();
-        ctx.fillStyle = '#FFF';
-        ctx.arc(cx, cy, radius / 4, 0, Math.PI * 2);
+        ctx.arc(cx - size / 4, cy - size / 4, size / 4, 0, Math.PI * 2);
         ctx.fill();
     }
 
@@ -122,15 +181,10 @@ export class Collectible {
     }
 
     /**
-     * Get boost power based on type
+     * Get the type of collectible
      */
-    getBoostPower() {
-        switch (this.type) {
-            case 'boost':
-                return -20; // Strong upward boost
-            default:
-                return -15;
-        }
+    getType() {
+        return this.type;
     }
 
     /**
